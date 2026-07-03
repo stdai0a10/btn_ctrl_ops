@@ -1,0 +1,70 @@
+name: btn_ctrl_ops
+version: "3.9"
+
+x-service: &base_service
+  restart: always
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+
+services:
+
+  cfargotunnel:
+    <<: *base_service
+    container_name: cfargotunnel
+    hostname: cfargotunnel
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    networks:
+      - external
+    volumes:
+      - ../cloudflared:/etc/cloudflared
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARED_TUNNEL_TOKEN}
+    healthcheck:
+      test: ["CMD", "cloudflared", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  traefik:
+    <<: *base_service
+    container_name: traefik
+    hostname: traefik
+    image: traefik:v3.7
+    networks:
+      - external
+      - internal
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - ../traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+
+  demo:
+    <<: *base_service
+    container_name: demo
+    hostname: demo
+    image: nginx:alpine
+    profiles:
+      - demo
+    restart: "no"
+    command: ["nginx", "-g", "daemon off;"]
+    networks:
+      - internal
+    volumes:
+      - ../demo:/usr/share/nginx/html:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.demo.rule=Host(`demo.localhost`) || Host(`demo.${DOMAIN:-localhost}`)
+
+networks:
+  external:
+    driver: bridge
+  internal:
+    driver: bridge

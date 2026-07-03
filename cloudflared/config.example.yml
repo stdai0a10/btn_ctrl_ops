@@ -1,0 +1,3 @@
+tunnel: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+# credentials-file: /etc/cloudflared/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.json
+url: http://traefik:80
