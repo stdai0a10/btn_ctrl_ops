@@ -15,14 +15,14 @@ services:
     container_name: cfargotunnel
     hostname: cfargotunnel
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate run --token-file=/run/secrets/cloudflared_tunnel_token
     networks:
       - external
     volumes:
       - ../cloudflared:/etc/cloudflared
       - /etc/localtime:/etc/localtime:ro
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARED_TUNNEL_TOKEN}
+    secrets:
+      - cloudflared_tunnel_token
     healthcheck:
       test: ["CMD", "cloudflared", "--version"]
       interval: 30s
@@ -74,3 +74,7 @@ networks:
     driver: bridge
   internal:
     driver: bridge
+
+secrets:
+  cloudflared_tunnel_token:
+    file: ../cloudflared/tunnel_token.txt
