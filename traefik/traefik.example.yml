@@ -7,3 +7,5 @@ entryPoints:
 providers:
   docker:
     exposedByDefault: false
+accessLog:
+  format: json
