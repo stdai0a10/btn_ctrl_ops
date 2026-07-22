@@ -45,6 +45,12 @@ services:
       - ../traefik:/etc/traefik
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   demo:
     <<: *base_service
