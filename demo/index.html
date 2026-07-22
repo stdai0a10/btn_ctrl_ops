@@ -1,8 +1,24 @@
 <html>
-    <head>
-        <title>Demo</title>
-    </head>
-    <body>
-        Hello World!
-    </body>
+  <head>
+    <title>Demo</title>
+  </head>
+  <body>
+    <div>Demo Works:</div>
+    <div id="demo-content"></div>
+    <script>
+      fetch("/demo.html")
+        .then((resp) => (resp.ok ? resp.text() : null))
+        .then((html) => {
+          if (html !== null) {
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            document.getElementById("demo-content").innerHTML =
+              doc.body.innerHTML;
+          }
+        })
+        .catch(() => {});
+    </script>
+    <noscript>
+      <div>See <a href="/demo.html">demo.html</a></div>
+    </noscript>
+  </body>
 </html>
