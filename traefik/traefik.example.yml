@@ -1,5 +1,6 @@
 api:
   insecure: true
+ping: {}
 entryPoints:
   web:
     address: ":80"
