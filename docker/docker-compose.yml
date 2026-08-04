@@ -52,10 +52,25 @@ services:
       retries: 3
       start_period: 10s
 
+  btn-ctrl-center:
+    <<: *base_service
+    build:
+      context: ${BTN_CTRL_CENTER_CONTEXT}
+      dockerfile: ${BTN_CTRL_CENTER_DOCKERFILE}
+    env_file:
+      - ${BTN_CTRL_CENTER_ENV}
+    networks:
+      - internal
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.btn-ctrl-center.rule=Host(`${BTN_CTRL_CENTER_HOST:-btn-ctrl-center.localhost}`)
+      - traefik.http.services.btn-ctrl-center.loadbalancer.server.port=80
+      - traefik.http.services.btn-ctrl-center.loadbalancer.healthcheck.path=/
+
   demo:
     <<: *base_service
-    container_name: demo
-    hostname: demo
     image: nginx:alpine
     profiles:
       - demo
@@ -67,7 +82,7 @@ services:
       - ../demo:/usr/share/nginx/html:ro
     labels:
       - traefik.enable=true
-      - traefik.http.routers.demo.rule=Host(`demo.localhost`) || Host(`demo.${DOMAIN:-localhost}`)
+      - traefik.http.routers.demo.rule=Host(`${DEMO_HOST:-demo.localhost}`)
 
 networks:
   external:
