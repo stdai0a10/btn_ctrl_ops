@@ -1,3 +1,2 @@
-*
-!.gitignore
-!copy_dot_env_file_to_here
+.env*
+!.env.example

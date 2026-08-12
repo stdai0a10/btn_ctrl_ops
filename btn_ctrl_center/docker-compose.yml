@@ -1,0 +1,29 @@
+name: btn_ctrl_center
+
+x-service: &base_service
+  restart: unless-stopped
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+
+services:
+  web:
+    <<: *base_service
+    build:
+      context: ${BTN_CTRL_CENTER_CONTEXT:-../../btn_ctrl_center}
+      dockerfile: ${BTN_CTRL_CENTER_DOCKERFILE:-docker/Dockerfile}
+    env_file:
+      - ./.env.docker
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.btn-ctrl-center.rule=Host(`${BTN_CTRL_CENTER_HOST:-btn-ctrl-center.localhost}`)
+      - traefik.http.services.btn-ctrl-center.loadbalancer.server.port=80
+      - traefik.http.services.btn-ctrl-center.loadbalancer.healthcheck.path=/
+
+networks:
+  default:
+    external: true
+    name: btn_ctrl_ops_internal
