@@ -13,9 +13,8 @@ services:
     build:
       context: ${BTN_CTRL_CENTER_CONTEXT:-../../btn_ctrl_center}
       dockerfile: ${BTN_CTRL_CENTER_DOCKERFILE:-docker/Dockerfile}
-    env_file:
-      - ./.env.docker
     volumes:
+      - ./.env.docker:/var/www/app/.env
       - /etc/localtime:/etc/localtime:ro
     labels:
       - traefik.enable=true
