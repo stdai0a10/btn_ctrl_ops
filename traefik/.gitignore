@@ -1,3 +1,4 @@
 *
 !.gitignore
 !traefik.example.yml
+!README.md
